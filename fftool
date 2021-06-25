@@ -1640,12 +1640,13 @@ class system(object):
                 self.z[i] = float(tok[3])
             
     def writelmp(self, mix='g', allpairs=False, units='r'):
-        natom = nbond = nangle = ndihed = 0
+        natom = nbond = nangle = ndihed = ndimpr = 0
         for sp in self.spec:
             natom += sp.nmol * len(sp.atom)
             nbond += sp.nmol * len(sp.bond)
             nangle += sp.nmol * len(sp.angle)
-            ndihed += sp.nmol * (len(sp.dihed) + len(sp.dimpr))
+            ndihed += sp.nmol * len(sp.dihed)
+            ndimpr += sp.nmol * len(sp.dimpr)
         
         with open('in.lmp', 'w') as f:
             f.write('# created by fftool\n\n')
@@ -1667,6 +1668,8 @@ class system(object):
                 f.write('angle_style harmonic\n')
             if ndihed:
                 f.write('dihedral_style opls\n')
+            if ndimpr:
+                f.write('improper_style opls\n')
             f.write('\n')
             
             f.write('special_bonds lj/coul 0.0 0.0 0.5\n\n')
@@ -1792,6 +1795,8 @@ class system(object):
                 f.write('{:d} angles\n'.format(nangle))
             if ndihed:
                 f.write('{:d} dihedrals\n'.format(ndihed))
+            if ndimpr:
+                f.write('{:d} impropers\n'.format(ndimpr))
             # f.write('\n')
                 
             f.write('{:d} atom types\n'.format(len(self.attype)))
@@ -1801,8 +1806,10 @@ class system(object):
                 f.write('{:d} angle types\n'.format(len(self.antype)))
             if ndihed:
                 ndht = len(self.dhtype)     # needed later
-                f.write('{:d} dihedral types\n'.format(ndht +
-                                                        len(self.ditype)))
+                f.write('{:d} dihedral types\n'.format(ndht))
+            if ndimpr:
+                ndit = len(self.ditype)     # needed later
+                f.write('{:d} improper types\n'.format(ndit))
 
             if self.box.center:
                 f.write('{:f} {:f} xlo xhi\n'.format(-self.box.lx / 2.0,
@@ -1845,6 +1852,8 @@ class system(object):
                              '  # {5}\n'.format(dht.ityp + 1,
                               dht.par[0] / ecnv, dht.par[1] / ecnv,
                               dht.par[2] / ecnv, dht.par[3] / ecnv, dht.name))
+            if ndimpr:
+                f.write('\nImproper Coeffs\n\n')
                 for dit in self.ditype:
                     f.write('{0:4d} {1:12.6f} {2:12.6f} {3:12.6f} {4:12.6f}'\
                              '  # {5}\n'.format(ndht + dit.ityp + 1,
@@ -1903,6 +1912,14 @@ class system(object):
                                      dh.i + shift, dh.j + shift, dh.k + shift,
                                      dh.l + shift, dh.name))
                             i += 1
+                        shift += natom
+            
+            if ndimpr:
+                f.write('\nImpropers\n\n')
+                i = shift = 1
+                for sp in self.spec:
+                    natom = len(sp.atom)
+                    for im in range(sp.nmol):
                         for di in sp.dimpr:
                             f.write('{0:7d} {1:4d} {2:7d} {3:7d} {4:7d} '\
                                      '{5:7d}  # {6}\n'.format(i,
