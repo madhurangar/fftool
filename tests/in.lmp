@@ -1,0 +1,76 @@
+# created by fftool
+
+units real
+boundary p p p
+
+atom_style full
+bond_style harmonic
+angle_style harmonic
+dihedral_style opls
+improper_style opls
+
+special_bonds lj/coul 0.0 0.0 0.5
+
+# remove hybrid if not necessary
+pair_style hybrid lj/cut/coul/long 12.0 12.0
+pair_modify mix geometric tail yes
+kspace_style pppm 1.0e-5
+
+read_data data.lmp
+# read_restart restart1.lmp
+
+# remove pair style if not using hybrid
+pair_coeff    1    1 lj/cut/coul/long     0.000000     0.000000  # CT1 CT1
+pair_coeff    2    2 lj/cut/coul/long     0.000000     0.000000  # CT2 CT2
+pair_coeff    3    3 lj/cut/coul/long     0.000000     0.000000  # HC1 HC1
+pair_coeff    4    4 lj/cut/coul/long     0.000000     0.000000  # HC2 HC2
+pair_coeff    5    5 lj/cut/coul/long     0.000000     0.000000  # HC3 HC3
+pair_coeff    6    6 lj/cut/coul/long     0.000000     0.000000  # OH OH
+pair_coeff    7    7 lj/cut/coul/long     0.000000     0.000000  # H11 H11
+pair_coeff    8    8 lj/cut/coul/long     0.000000     0.000000  # H12 H12
+pair_coeff    9    9 lj/cut/coul/long     0.000000     0.000000  # HO HO
+pair_coeff   10   10 lj/cut/coul/long     0.000000     0.000000  # C C
+pair_coeff   11   11 lj/cut/coul/long     0.000000     0.000000  # Ca Ca
+pair_coeff   12   12 lj/cut/coul/long     0.000000     0.000000  # O1 O1
+pair_coeff   13   13 lj/cut/coul/long     0.000000     0.000000  # O2 O2
+pair_coeff   14   14 lj/cut/coul/long     0.000000     0.000000  # O3 O3
+
+# minimize 1.0e-4 1.0e-6 100 1000
+# reset_timestep 0
+
+neighbor 2.0 bin
+# neigh_modify delay 0 every 1 check yes
+
+timestep 1.0
+
+variable TK equal 300.0
+variable PBAR equal 1.0
+
+velocity all create ${TK} 12345
+
+fix TPSTAT all npt temp ${TK} ${TK} 100 iso ${PBAR} ${PBAR} 1000
+
+thermo_style custom step cpu etotal ke pe evdwl ecoul elong temp press vol density
+thermo 1000
+
+dump TRAJ all custom 1000 dump.lammpstrj id mol type element q xu yu zu
+dump_modify TRAJ element C C H H H O H H H C Ca O O O
+
+variable vinst equal vol
+fix VAVG all ave/time 10 1000 50000 v_vinst
+
+# restart 10000 restart1.lmp restart2.lmp
+
+run 50000
+
+variable lscale equal (f_VAVG/v_vinst)^(1.0/3.0)
+print "scaling coordinates by ${lscale}"
+change_box all x scale ${lscale} y scale ${lscale} z scale ${lscale} remap
+
+unfix VAVG
+unfix TPSTAT
+fix TSTAT all nvt temp ${TK} ${TK} 100
+
+run 10000
+
+write_data data.eq.lmp
