@@ -1,6 +1,8 @@
 fftool
 ======
 
+‼️ modified version of the fftools to print proper and improper dihedrals can be found [here](https://github.com/madhurangar/fftool/tree/separate-impropers)
+
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.18618.svg)](http://dx.doi.org/10.5281/zenodo.18618)
 
 _[Agilio Padua](http://perso.ens-lyon.fr/agilio.padua)_
