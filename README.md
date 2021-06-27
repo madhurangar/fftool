@@ -1,6 +1,12 @@
 fftool
 ======
 
+‼️ This is a modified version of fftools to print impropers as a separate list in the lammps input. Please be cautious about following:  
+ - Only tested for xyz files
+ - Improper types (integer) continue from the dihedrals     
+
+---
+
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.18618.svg)](http://dx.doi.org/10.5281/zenodo.18618)
 
 _[Agilio Padua](http://perso.ens-lyon.fr/agilio.padua)_
