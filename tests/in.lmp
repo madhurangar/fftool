@@ -31,9 +31,7 @@ pair_coeff    8    8 lj/cut/coul/long     0.000000     0.000000  # H12 H12
 pair_coeff    9    9 lj/cut/coul/long     0.000000     0.000000  # HO HO
 pair_coeff   10   10 lj/cut/coul/long     0.000000     0.000000  # C C
 pair_coeff   11   11 lj/cut/coul/long     0.000000     0.000000  # Ca Ca
-pair_coeff   12   12 lj/cut/coul/long     0.000000     0.000000  # O1 O1
-pair_coeff   13   13 lj/cut/coul/long     0.000000     0.000000  # O2 O2
-pair_coeff   14   14 lj/cut/coul/long     0.000000     0.000000  # O3 O3
+pair_coeff   12   12 lj/cut/coul/long     0.000000     0.000000  # O O
 
 # minimize 1.0e-4 1.0e-6 100 1000
 # reset_timestep 0
@@ -54,7 +52,7 @@ thermo_style custom step cpu etotal ke pe evdwl ecoul elong temp press vol densi
 thermo 1000
 
 dump TRAJ all custom 1000 dump.lammpstrj id mol type element q xu yu zu
-dump_modify TRAJ element C C H H H O H H H C Ca O O O
+dump_modify TRAJ element C C H H H O H H H C Ca O
 
 variable vinst equal vol
 fix VAVG all ave/time 10 1000 50000 v_vinst
