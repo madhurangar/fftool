@@ -415,7 +415,9 @@ class dihed(object):
 
 
 class dimpr(dihed):
-    '''improper dihedral angle'''
+    '''improper dihedral angle
+    NOTE: Switch j and k: ikjl?
+    '''
     
     def __str__(self):
         if hasattr(self, 'name'):
@@ -1921,7 +1923,7 @@ class system(object):
                     natom = len(sp.atom)
                     for im in range(sp.nmol):
                         for di in sp.dimpr:
-                            f.write('{0:7d} {1:4d} {2:7d} {3:7d} {4:7d} '\
+                            f.write('{0:7d} {1:4d} {2:7d} {4:7d} {3:7d} '\
                                      '{5:7d}  # {6}\n'.format(i,
                                      ndht + di.ityp + 1, di.i + shift,
                                      di.j + shift, di.k + shift, di.l + shift,
