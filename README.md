@@ -3,7 +3,8 @@ fftool
 
 ‼️ This is a modified version of fftools to print impropers as a separate list in the lammps input. Please be cautious about following:  
  - Only tested for xyz files
- - Improper types (integer) continue from the dihedrals     
+ - Improper types (integer) continue from the dihedrals
+ - improper order is changed to ikjl from ijkl     
 
 ---
 
